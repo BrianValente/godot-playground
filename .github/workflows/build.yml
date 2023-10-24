@@ -1,0 +1,34 @@
+name: Build
+on:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.1.2
+  EXPORT_NAME: project
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.1.2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/
+          mv /root/.local/share/godot/export_templates/$GODOT_VERSION.stable ~/.local/share/godot/export_templates/$GODOT_VERSION.stable
+
+      - name: Build
+        run: |
+          mkdir -v -p build
+          godot -v --headless --export-release "Linux/X11" "./build/$EXPORT_NAME.x86_64"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: project
+          path: ./build
