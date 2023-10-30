@@ -1,6 +1,14 @@
 name: Build
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        description: Platform
+        default: "Windows Desktop"
+        options:
+          - "Windows Desktop"
+          - "Linux/X11"
 
 env:
   GODOT_VERSION: 4.1.2
@@ -25,7 +33,7 @@ jobs:
       - name: Build
         run: |
           mkdir -v -p build
-          godot -v --headless --export-release "Linux/X11" "./build/$EXPORT_NAME.x86_64"
+          godot -v --headless --export-release "${{ github.event.inputs.platform }}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
